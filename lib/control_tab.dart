@@ -193,8 +193,7 @@ class ControlButton extends ConsumerWidget {
       if (command == 'P') {
         ref.read(pumpStateProvider.notifier).state = !isPumpOn;
         bluetooth.sendCommand(command + (isPumpOn ? '0' : '1'));
-        final isCreated = await FileHandler.writeData("PUMP ${isPumpOn ? 'OFF' : 'ON'}");
-        if (isCreated) ref.invalidate(logFilesProvider);
+        await FileHandler.writeData("PUMP ${isPumpOn ? 'OFF' : 'ON'}");
         return;
       } else if (command == 'U') {
         ref.read(upStateProvider.notifier).state = true;
@@ -231,6 +230,7 @@ class ControlButton extends ConsumerWidget {
     return GestureDetector(
       onTapUp: (_) => command != 'P' ? send('S') : null,
       onTapDown: (_) => send(command),
+      onTapCancel: () => command != 'P' ? send('S') : null,
       child: Container(
         decoration: BoxDecoration(color: buttonColor, borderRadius: BorderRadius.circular(25)),
         child: Center(child: Text(label, style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold))),

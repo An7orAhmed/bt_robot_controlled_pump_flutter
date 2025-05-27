@@ -11,6 +11,7 @@ class LogsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final logFiles = ref.watch(logFilesProvider);
+    ref.invalidate(logFilesProvider); // Ensure the provider is refreshed
 
     return logFiles.when(
       data: (files) {
