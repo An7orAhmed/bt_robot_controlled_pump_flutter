@@ -183,7 +183,7 @@ class ControlButton extends ConsumerWidget {
     final isLeftPressed = ref.watch(leftStateProvider);
     final isRightPressed = ref.watch(rightStateProvider);
 
-    void send(String command) {
+    Future<void> send(String command) async {
       if (!isConnected) {
         ScaffoldMessenger.of(
           context,
@@ -193,7 +193,8 @@ class ControlButton extends ConsumerWidget {
       if (command == 'P') {
         ref.read(pumpStateProvider.notifier).state = !isPumpOn;
         bluetooth.sendCommand(command + (isPumpOn ? '0' : '1'));
-        FileHandler.writeData("PUMP ${isPumpOn ? 'OFF' : 'ON'}");
+        final isCreated = await FileHandler.writeData("PUMP ${isPumpOn ? 'OFF' : 'ON'}");
+        if (isCreated) ref.invalidate(logFilesProvider);
         return;
       } else if (command == 'U') {
         ref.read(upStateProvider.notifier).state = true;

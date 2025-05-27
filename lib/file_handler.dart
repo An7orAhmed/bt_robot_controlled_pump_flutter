@@ -16,17 +16,20 @@ class FileHandler {
     return File('$path/$date.txt');
   }
 
-  static Future<void> writeData(String data) async {
+  static Future<bool> writeData(String data) async {
     final date = DateFormat('yyyy-MM-dd').format(DateTime.now());
     final file = await _getFile(date);
+    bool isCreated = false;
     if (!await file.exists()) {
       debugPrint('File does not exist, creating new file...');
       await file.create();
+      isCreated = true;
     } else {
       debugPrint('File exists, appending data...');
     }
     final timestamp = DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now());
     await file.writeAsString('$timestamp: $data\n', mode: FileMode.append);
+    return isCreated;
   }
 
   static Future<List<String>> readData(String fileName) async {
