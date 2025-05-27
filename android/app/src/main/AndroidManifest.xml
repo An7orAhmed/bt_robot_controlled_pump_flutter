@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <application
-        android:label="robot_controlled_pump"
+        android:label="RoboCP"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

@@ -4,11 +4,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class BluetoothService {
-  BluetoothConnection? _connection;
-  final _controller = StreamController<String>.broadcast();
+import 'file_handler.dart';
 
+class BluetoothService {
+  final _controller = StreamController<String>.broadcast();
   Stream<String> get dataStream => _controller.stream;
+
+  BluetoothConnection? _connection;
   bool get isConnected => _connection != null && _connection!.isConnected;
   String? connectedDevice;
 
@@ -25,11 +27,16 @@ class BluetoothService {
   Future<bool> connect(BluetoothDevice device) async {
     try {
       _connection = await BluetoothConnection.toAddress(device.address);
-      _connection!.input!
+      if (_connection == null) {
+        debugPrint('Failed to connect to the device');
+        return false;
+      }
+      _connection?.input!
           .listen((data) {
             String received = String.fromCharCodes(data).trim();
             if (received.isNotEmpty) {
               _controller.add(received);
+              FileHandler.writeData(received);
             }
           })
           .onDone(() {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'file_handler.dart';
+import 'log_details_screen.dart';
 import 'providers.dart';
 
 class LogsTab extends ConsumerWidget {
@@ -21,12 +22,12 @@ class LogsTab extends ConsumerWidget {
             ),
           );
         }
-        return ListView.builder(
+        return ListView.separated(
           itemCount: files.length,
           itemBuilder: (context, index) {
             final fileName = files[index];
             return ListTile(
-              title: Text('Date: $fileName'),
+              title: Text(fileName.split('.').first),
               trailing: IconButton(
                 icon: Icon(Icons.delete, color: Colors.red),
                 onPressed: () {
@@ -56,78 +57,13 @@ class LogsTab extends ConsumerWidget {
               },
             );
           },
+          separatorBuilder: (BuildContext context, int index) {
+            return Divider(color: Colors.grey.shade300, height: 1);
+          },
         );
       },
       loading: () => Center(child: CircularProgressIndicator()),
       error: (err, _) => Center(child: Text('Error: $err')),
-    );
-  }
-}
-
-// Log Detail Page
-class LogDetailPage extends StatelessWidget {
-  final String fileName;
-
-  const LogDetailPage({super.key, required this.fileName});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(fileName)),
-      body: FutureBuilder<List<String>>(
-        future: FileHandler.readData(fileName),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No data available'));
-          }
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              columns: [
-                DataColumn(label: Text('Timestamp')),
-                DataColumn(label: Text('Temperature')),
-                DataColumn(label: Text('Humidity')),
-                DataColumn(label: Text('Event')),
-              ],
-              rows:
-                  snapshot.data!.map((line) {
-                    final parts = line.split(': ');
-                    final timestamp = parts[0];
-                    final data = parts[1];
-                    bool isPumpEvent = data.contains('Pump');
-                    return DataRow(
-                      color: isPumpEvent ? WidgetStateProperty.all(Colors.yellow.withAlpha(30)) : null,
-                      cells: [
-                        DataCell(Text(timestamp)),
-                        DataCell(
-                          Text(
-                            isPumpEvent
-                                ? ''
-                                : data.contains('t=')
-                                ? data.split(',')[0].split('=')[1]
-                                : '',
-                          ),
-                        ),
-                        DataCell(
-                          Text(
-                            isPumpEvent
-                                ? ''
-                                : data.contains('h=')
-                                ? data.split(',')[1].split('=')[1]
-                                : '',
-                          ),
-                        ),
-                        DataCell(Text(isPumpEvent ? data : '')),
-                      ],
-                    );
-                  }).toList(),
-            ),
-          );
-        },
-      ),
     );
   }
 }

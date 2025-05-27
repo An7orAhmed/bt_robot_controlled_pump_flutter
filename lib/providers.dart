@@ -13,7 +13,14 @@ final bluetoothServiceProvider = Provider<BluetoothService>((ref) {
 final connectionStateProvider = StateProvider<bool>((ref) => false);
 final connectedDeviceProvider = StateProvider<String?>((ref) => null);
 final sensorDataProvider = StateProvider<Map<String, String>>((ref) => {});
+
 final logFilesProvider = FutureProvider<List<String>>((ref) async {
-  final dir = await getApplicationDocumentsDirectory();
-  return dir.listSync().whereType<File>().map((f) => f.path.split('/').last).toList();
+  final dir = await getDownloadsDirectory();
+  return dir!.listSync().whereType<File>().map((f) => f.path.split('/').last).toList();
 });
+
+final pumpStateProvider = StateProvider<bool>((ref) => false);
+final upStateProvider = StateProvider<bool>((ref) => false);
+final downStateProvider = StateProvider<bool>((ref) => false);
+final leftStateProvider = StateProvider<bool>((ref) => false);
+final rightStateProvider = StateProvider<bool>((ref) => false);
