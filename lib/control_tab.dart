@@ -17,6 +17,12 @@ class ControlTab extends ConsumerStatefulWidget {
 class _ControlTabState extends ConsumerState<ControlTab> {
   StreamSubscription<String>? _dataSubscription;
 
+  void showPopupMessage(String message) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red));
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -26,6 +32,16 @@ class _ControlTabState extends ConsumerState<ControlTab> {
       if (data.contains('t=') && data.contains('h=')) {
         final parts = data.split(',').map((e) => e.split('=')).toList();
         ref.read(sensorDataProvider.notifier).state = {'Temperature': parts[0][1], 'Humidity': parts[1][1]};
+      } else if (data.contains("msg=")) {
+        if (data.isNotEmpty) {
+          if (data.contains('bl')) {
+            showPopupMessage("Barrier detected! Left move not allowed.");
+          } else if (data.contains('br')) {
+            showPopupMessage("Barrier detected! Right move not allowed.");
+          } else if (data.contains('bf')) {
+            showPopupMessage("Barrier detected! Forward move not allowed.");
+          }
+        }
       }
     });
   }
