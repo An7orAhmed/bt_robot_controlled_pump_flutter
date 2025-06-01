@@ -36,7 +36,9 @@ class BluetoothService {
             String received = String.fromCharCodes(data).trim();
             if (received.isNotEmpty) {
               _controller.add(received);
-              FileHandler.writeData(received);
+              if (received.contains('t=') && received.contains('h=')) {
+                FileHandler.writeData(received);
+              }
             }
           })
           .onDone(() {

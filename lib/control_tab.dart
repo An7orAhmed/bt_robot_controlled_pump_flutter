@@ -117,38 +117,49 @@ class _ControlTabState extends ConsumerState<ControlTab> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
+          Center(child: Text("Tap on card to read sensor...", style: TextStyle(fontStyle: FontStyle.italic, fontSize: 12))),
+          SizedBox(height: 5),
           // Sensor Data Cards
           Row(
             spacing: 16,
             children: [
               Expanded(
                 child: Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Text("${sensorData['Temperature'] ?? '--'}°C", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                        Text('Temperature', style: TextStyle(fontWeight: FontWeight.bold)),
-                      ],
+                  child: InkWell(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    onTap: () => bluetooth.sendCommand('?'),
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Text("${sensorData['Temperature'] ?? '--'}°C", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                          Text('Temperature', style: TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
               Expanded(
                 child: Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        Text("${sensorData['Humidity'] ?? '--'}%", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                        Text('Humidity', style: TextStyle(fontWeight: FontWeight.bold)),
-                      ],
+                  child: InkWell(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    onTap: () => bluetooth.sendCommand('?'),
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Column(
+                        children: [
+                          Text("${sensorData['Humidity'] ?? '--'}%", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                          Text('Humidity', style: TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ],
           ),
+
           Spacer(),
           // Robot Controls
           GridView.count(
@@ -208,7 +219,7 @@ class ControlButton extends ConsumerWidget {
       }
       if (command == 'P') {
         ref.read(pumpStateProvider.notifier).state = !isPumpOn;
-        bluetooth.sendCommand(command + (isPumpOn ? '0' : '1'));
+        bluetooth.sendCommand((isPumpOn ? '0' : '1'));
         await FileHandler.writeData("PUMP ${isPumpOn ? 'OFF' : 'ON'}");
         return;
       } else if (command == 'U') {
